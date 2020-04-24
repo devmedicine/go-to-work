@@ -1,0 +1,24 @@
+{
+  "name": "go-to-work",
+  "version": "1.0.0",
+  "description": "go to work on Docker",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devmedicine/go-to-work.git"
+  },
+  "author": "devmedicine",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/devmedicine/go-to-work/issues"
+  },
+  "homepage": "https://github.com/devmedicine/go-to-work#readme",
+  "dependencies": {
+    "date-utils": "^1.2.21",
+    "express": "^4.17.1",
+    "sqlite3": "^4.1.1"
+  }
+}
