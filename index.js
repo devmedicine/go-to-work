@@ -5,12 +5,15 @@ require("date-utils");
 const fs = require('fs')
 const express = require("express");
 const sqlite3 = require('sqlite3').verbose();
+const bodyParser = require('body-parser');
 
 // Constants
 const PORT = 8080;
 const HOST = '0.0.0.0';
 
+// express settings
 const app = express();
+app.use(bodyParser.json())
 
 // DB初期化
 if (!fs.existsSync('punchData')) {
@@ -45,8 +48,9 @@ app.get("/show/:userId", function (req, res) {
 /**
  * 出勤
  */
-app.post("/in", function (req, respond) {
+app.post("/in", (req, res) => {
     punching(0, req.body.user_id);
+    res.send('success!');
 });
 
 /**
@@ -61,15 +65,13 @@ app.post("/out", function (request, respond) {
  * @param {Number} isIn 0:出勤 1:退勤
  * @param {String} userId ユーザID
  */
-const punching = (isIn, userId) =>{
+const punching = (isIn, userId) => {
     const db = new sqlite3.Database('punchData');
-    const now = new Date().toFormat("YYYY/MM/DD HH24:MI:SS") 
+    const now = new Date().toFormat("YYYY/MM/DD HH24:MI:SS")
     // insert
     db.serialize(function () {
-        const stmt = db.prepare('INSERT INTO punch VALUES (?)');
-        stmt.run(`${userId}, ${now}, ${isIn}`, (err) => {
-            console.log(err)
-        })
+        const stmt = db.prepare('INSERT INTO punch VALUES (?, ?, ?)');
+        stmt.run(userId, now, isIn)
         stmt.finalize();
     });
 
