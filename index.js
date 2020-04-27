@@ -2,6 +2,7 @@
 
 // requires
 require("date-utils");
+const fs = require('fs')
 const express = require("express");
 const sqlite3 = require('sqlite3').verbose();
 
@@ -12,11 +13,13 @@ const HOST = '0.0.0.0';
 const app = express();
 
 // DB初期化
-const initDb = new sqlite3.Database('punchData');
-initDb.serialize(function () {
-    initDb.run('CREATE TABLE punch (user_id TEXT, punch_date_time TEXT, is_in integer)');
-});
-initDb.close();
+if (!fs.existsSync('punchData')) {
+    const initDb = new sqlite3.Database('punchData');
+    initDb.serialize(function () {
+        initDb.run('CREATE TABLE punch (user_id TEXT, punch_date_time TEXT, is_in integer)');
+    });
+    initDb.close();
+}
 
 app.get("/show/all", function (req, res) {
     const db = new sqlite3.Database('punchData');
