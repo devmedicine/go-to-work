@@ -62,6 +62,26 @@ app.get("/charts/bar/:userId", function (req, res) {
 });
 
 /**
+ * 出退勤時間描画(テーブル)
+ */
+app.get("/charts/table/:userId", function (req, res) {
+    const db = new sqlite3.Database('punchData');
+    db.serialize(function () {
+        const query = `SELECT * FROM punch WHERE user_id = '${req.params.userId}'`
+        db.all(query, (err, rows) => {
+            const days = getDaysInThisMonth();
+            const tableObjects = retouchPunchDataToTable(days, rows);
+            let tableElement = "";
+            tableObjects.forEach(t => {
+                tableElement += `<tr><th scope="row">${t.day}</th><td>${t.in}</td><td>${t.out}</td><td>${t.diff}</td></tr>`
+            })
+            res.render('table', { elem: tableElement });
+        })
+    });
+    db.close();
+});
+
+/**
  * 出勤
  */
 app.post("/in", (req, res) => {
@@ -121,10 +141,43 @@ const retouchPunchDataToBar = (days, rows) => {
     return result;
 }
 
+/**
+ * 出退勤時刻確認用オブジェクトを返す
+ * @param {*} days 
+ * @param {*} rows 
+ */
+const retouchPunchDataToTable = (days, rows) => {
+    let result = [];
     if (rows.length <= 0) {
+        return result;
+    }
+
+    days.forEach(d => {
+        const sameDays = rows.filter(row => row.punch_date === d);
+        // 曜日付きにする
+        const day = moment(d, 'YYYY-MM-DD').format('YYYY/MM/DD (ddd)')
+        // 退勤まで登録されている日付
+        if (sameDays && sameDays[1]) {
+            // 差を求める
+            const diff = hoursDiff(sameDays, true);
+            result.push({
+                day,
+                "in": sameDays[0].is_in == 0 ? `${sameDays[0].punch_time}` : `${sameDays[1].punch_time}`,
+                "out": sameDays[0].is_in == 1 ? `${sameDays[0].punch_time}` : `${sameDays[1].punch_time}`,
+                diff,
+            });
+        } else {
+            result.push({
+                day,
+                "in": "",
+                "out": "",
+                "diff": 0,
+            });
+        }
+    });
+
     return result;
 }
-
 
 /**
  * 時間差を求める
