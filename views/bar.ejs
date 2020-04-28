@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <title>当月勤務時間</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark bg-primary mb-2">
+        <a href="#" class="navbar-brand"><%=userId%></a>
+    </nav>
+    <div class="container">
+        <canvas id="myChart"></canvas>
+    </div>
+</body>
+<script>
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: <%- JSON.stringify(days) %>,
+            datasets: [{
+                label: "勤務時間(h)",
+                data: [<%=rows %>],
+                backgroundColor: "rgba(130,201,169,0.5)",
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+</html>
