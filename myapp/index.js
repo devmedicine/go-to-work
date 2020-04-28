@@ -10,7 +10,6 @@ const bodyParser = require('body-parser');
 
 // Constants
 const PORT = 8080;
-const HOST = '0.0.0.0';
 const LUNCH_BREAK = 1;
 
 // express settings
@@ -216,5 +215,6 @@ const getDaysInThisMonth = () => {
 }
 
 //listenで待ち受け状態にする
-app.listen(PORT, HOST);
-console.log(`Running on http://${HOST}:${PORT}`)
+app.listen(PORT, () => {
+    console.log(`Running on http://localhost:${PORT}`)
+});
