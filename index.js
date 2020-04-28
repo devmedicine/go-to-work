@@ -1,7 +1,7 @@
 'use strict'
 
 // requires
-require("date-utils");
+const moment = require('moment');
 const fs = require('fs')
 const express = require("express");
 const sqlite3 = require('sqlite3').verbose();
