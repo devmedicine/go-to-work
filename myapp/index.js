@@ -84,7 +84,8 @@ app.get("/charts/table/:userId", function (req, res) {
  * 出勤
  */
 app.post("/in", (req, res) => {
-    punching(0, req.body.user_id);
+	console.log(req.body);
+    punching(0, req.body.user_name);
     res.send('success!');
 });
 
@@ -92,7 +93,8 @@ app.post("/in", (req, res) => {
  * 退勤
  */
 app.post("/out", function (req, res) {
-    punching(1, req.body.user_id);
+	console.log(req.body);
+    punching(1, req.body.user_name);
     res.send('success!');
 });
 
