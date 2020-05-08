@@ -85,7 +85,7 @@ app.get("/charts/table/:userId", function (req, res) {
  */
 app.post("/in", (req, res) => {
 	console.log(req.body);
-    punching(0, req.body.user_name);
+    punching(0, req.body.user_name, req.body.timestamp);
     res.send('success!');
 });
 
@@ -93,8 +93,8 @@ app.post("/in", (req, res) => {
  * 退勤
  */
 app.post("/out", function (req, res) {
-	console.log(req.body);
-    punching(1, req.body.user_name);
+    console.log(req.body);
+    punching(1, req.body.user_name, req.body.timestamp);
     res.send('success!');
 });
 
@@ -102,11 +102,12 @@ app.post("/out", function (req, res) {
  * 打刻処理
  * @param {Number} isIn 0:出勤 1:退勤
  * @param {String} userId ユーザID
+ * @param {unix} timestamp タイムスタンプ
  */
-const punching = (isIn, userId) => {
+const punching = (isIn, userId, timestamp) => {
     const db = new sqlite3.Database('punchData');
-    const nowDate = moment().format("YYYY/MM/DD");
-    const nowTime = moment().format("HH:mm:ss");
+    const nowDate = timestamp ? moment(timestamp).utcOffset('+0900').format("YYYY/MM/DD") : moment().utcOffset('+0900').format("YYYY/MM/DD");
+    const nowTime = timestamp ? moment(timestamp).utcOffset('+0900').format("HH:mm:ss") : moment().utcOffset('+0900').format("HH:mm:ss");
     // insert
     db.serialize(function () {
         const stmt = db.prepare('INSERT INTO punch VALUES (?, ?, ?, ?) ON CONFLICT(user_id, punch_date, is_in) do UPDATE SET punch_time = ?');
